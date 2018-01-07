@@ -1,0 +1,33 @@
+{% extends "blog/base.html"%}
+{% load blog_tags %}
+{% block title %}MY Blog {% endblock title%}
+
+{% block content %}
+    <h1>My Blog</h1>
+    {% if tag %}
+        <h2>Posts tagged with "{{ tag.name }}"</h2>
+    {% endif %}
+    <p class="tags">
+        All Tags:
+            {% for tag in tags %}
+        <a href="{% url 'blog:post_list_by_tag' tag.slug %}">
+            {{ tag.name }}
+        </a>
+            {% empty %}
+                当前没有任何标签！
+            {% endfor %}
+    </p>
+    {% for post in posts%}
+        <h2>
+            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+        </h2>
+        <p class="tags">Tags: {{ post.tags.all|join:"," }}</p>
+        <p class="date">
+            Published{{ post.publish }} by {{ post.author }}
+        </p>
+        {{ post.body|markdown|truncatewords_html:30 }}
+    {% empty%}
+        现在没有文章！
+    {% endfor%}
+    {% include 'paginator.html' with page=posts %}
+{% endblock content%}
